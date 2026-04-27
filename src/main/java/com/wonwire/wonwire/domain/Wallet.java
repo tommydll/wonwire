@@ -26,6 +26,7 @@ public class Wallet {
     /**
      * Optimistic locking: prevents balance corruption when two transfers arrive simultaneously.
      * JPA increments this field on every update and throws an exception if two transactions modify the same row at the same time.
+     * We assume that there is no conflict, we check at the end of the transaction.
      */
     @Version
     private Long version;
