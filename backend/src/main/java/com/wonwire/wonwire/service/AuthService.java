@@ -5,6 +5,8 @@ import com.wonwire.wonwire.domain.Wallet;
 import com.wonwire.wonwire.dto.AuthResponseDTO;
 import com.wonwire.wonwire.dto.LoginRequestDTO;
 import com.wonwire.wonwire.dto.RegisterRequestDTO;
+import com.wonwire.wonwire.exception.UserAlreadyExistsException;
+import com.wonwire.wonwire.exception.UserNotFoundException;
 import com.wonwire.wonwire.repository.UserRepository;
 import com.wonwire.wonwire.repository.WalletRepository;
 import com.wonwire.wonwire.security.JwtService;
@@ -34,7 +36,7 @@ public class AuthService {
     @Transactional
     public AuthResponseDTO register(RegisterRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already in use");
+            throw new UserAlreadyExistsException(request.getEmail());
         }
 
         User user = User.builder()
@@ -75,8 +77,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
         String token = jwtService.generateToken(user);
 
         return AuthResponseDTO.builder()
