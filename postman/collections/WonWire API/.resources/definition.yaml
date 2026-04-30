@@ -1,3 +1,0 @@
-$kind: collection
-name: WonWire API
-description: Collection pour tester l'API WonWire - backend Spring Boot avec authentification JWT.
