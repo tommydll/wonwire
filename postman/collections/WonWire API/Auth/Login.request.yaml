@@ -1,0 +1,31 @@
+$kind: http-request
+name: Login
+method: POST
+url: http://localhost:8080/api/auth/login
+order: 4000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "email": "thomas@test.com",
+        "password": "testPassword"
+    }
+description: |-
+  Authentifie un utilisateur existant et retourne un JWT token.
+
+  **Réponse attendue (200 OK):**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "email": "thomas@wonwire.com",
+    "fullName": "Thomas Daullé"
+  }
+  ```
+
+  **Cas d'erreur à tester :**
+  - Email inexistant → 404 Not Found
+  - Mauvais mot de passe → 401 Unauthorized
+  - Email invalide (format) → 400 Bad Request
+  - Champs manquants → 400 Bad Request

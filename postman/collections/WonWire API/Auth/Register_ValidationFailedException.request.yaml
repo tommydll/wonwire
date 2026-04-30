@@ -1,0 +1,16 @@
+$kind: http-request
+name: Register_ValidationFailedException
+url: http://localhost:8080/api/auth/register
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+        "email": "thomas@test.com",
+        "password": "testPassword",
+        "fullName": "Thomas Test"
+    }
+order: 2479
