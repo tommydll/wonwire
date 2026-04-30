@@ -1,5 +1,6 @@
 package com.wonwire.wonwire.domain;
 
+import com.wonwire.wonwire.domain.enums.Currency;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -19,6 +20,15 @@ public class Wallet {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    /**
+     * The currency of this wallet.
+     * A wallet operates in a single currency only.
+     * Multi-currency support requires multiple wallets per user.
+     */
+    private Currency currency;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;

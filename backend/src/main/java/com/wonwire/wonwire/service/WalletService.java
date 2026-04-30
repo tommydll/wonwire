@@ -24,6 +24,7 @@ public class WalletService {
 
         return WalletResponseDTO.builder()
                 .balance(wallet.getBalance())
+                .currency(wallet.getCurrency())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .build();

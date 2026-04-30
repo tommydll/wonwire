@@ -2,6 +2,7 @@ package com.wonwire.wonwire.service;
 
 import com.wonwire.wonwire.domain.User;
 import com.wonwire.wonwire.domain.Wallet;
+import com.wonwire.wonwire.domain.enums.Currency;
 import com.wonwire.wonwire.dto.AuthResponseDTO;
 import com.wonwire.wonwire.dto.LoginRequestDTO;
 import com.wonwire.wonwire.dto.RegisterRequestDTO;
@@ -50,6 +51,7 @@ public class AuthService {
         Wallet wallet = Wallet.builder()
                 .user(user)
                 .balance(BigDecimal.ZERO)
+                .currency(Currency.KRW)
                 .build();
 
         walletRepository.save(wallet);

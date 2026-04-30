@@ -1,5 +1,6 @@
 package com.wonwire.wonwire.dto;
 
+import com.wonwire.wonwire.domain.enums.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class WalletResponseDTO {
     private BigDecimal balance;
+    private Currency currency;
     private String email;
     private String fullName;
 }

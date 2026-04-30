@@ -1,5 +1,6 @@
 package com.wonwire.wonwire.domain;
 
+import com.wonwire.wonwire.domain.enums.Currency;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -30,13 +31,21 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    /**
+     * The currency in which this transaction was made.
+     * Must match the sender's wallet currency.
+     */
+    private Currency currency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TransactionStatus status;
 
     /**
      * Idempotency key: guarantees that the same transfer cannot be executed twice.
      * The client generates a unique key per request (UUID).
      * If the key already exists in the database, the previous result is returned without re-executing.
-     * Used in prod by Toss, Stripe, Kakao Pay
+     * (Used in prod by Toss, Stripe, Kakao Pay)
      */
     @Column(nullable = false, unique = true)
     private String idempotencyKey;
