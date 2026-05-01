@@ -24,3 +24,9 @@ server:
 jwt:
   secret: wonwire-secret-key-change-this-in-production-must-be-very-long
   expiration: 86400000
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
