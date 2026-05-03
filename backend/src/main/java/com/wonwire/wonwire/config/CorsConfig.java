@@ -13,7 +13,6 @@ public class CorsConfig {
 
     /**
      * Configures CORS to allow the React frontend to call the backend API.
-     * In development, allows requests from localhost:5173 (Vite default port).
      * The Authorization header is explicitly allowed to enable JWT authentication.
      */
     @Bean
