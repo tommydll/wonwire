@@ -2,6 +2,7 @@ package com.wonwire.wonwire.controller;
 
 import com.wonwire.wonwire.dto.AuthResponseDTO;
 import com.wonwire.wonwire.dto.LoginRequestDTO;
+import com.wonwire.wonwire.dto.MessageResponseDTO;
 import com.wonwire.wonwire.dto.RegisterRequestDTO;
 import com.wonwire.wonwire.service.AuthService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class AuthController {
      * POST /api/auth/register
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<MessageResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.register(request));

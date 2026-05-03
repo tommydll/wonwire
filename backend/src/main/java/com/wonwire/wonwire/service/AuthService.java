@@ -5,6 +5,7 @@ import com.wonwire.wonwire.domain.Wallet;
 import com.wonwire.wonwire.domain.enums.Currency;
 import com.wonwire.wonwire.dto.AuthResponseDTO;
 import com.wonwire.wonwire.dto.LoginRequestDTO;
+import com.wonwire.wonwire.dto.MessageResponseDTO;
 import com.wonwire.wonwire.dto.RegisterRequestDTO;
 import com.wonwire.wonwire.exception.UserAlreadyExistsException;
 import com.wonwire.wonwire.exception.UserNotFoundException;
@@ -35,7 +36,7 @@ public class AuthService {
      * Returns a JWT token for immediate authentication after registration.
      */
     @Transactional
-    public AuthResponseDTO register(RegisterRequestDTO request) {
+    public MessageResponseDTO register(RegisterRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistsException(request.getEmail());
         }
@@ -56,13 +57,7 @@ public class AuthService {
 
         walletRepository.save(wallet);
 
-        String token = jwtService.generateToken(user);
-
-        return AuthResponseDTO.builder()
-                .token(token)
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .build();
+        return new MessageResponseDTO("Account created successfully. Please sign in.");
     }
 
     /**
