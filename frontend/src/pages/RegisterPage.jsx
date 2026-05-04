@@ -25,7 +25,9 @@ function RegisterPage() {
                 password,
                 fullName
             })
-            navigate('/login')
+            navigate('/login', {
+                state: { message: 'Account created successfully. Please sign in.' }
+            })
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
             setPassword('')

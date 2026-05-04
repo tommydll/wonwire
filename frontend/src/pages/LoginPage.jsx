@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.js'
+import { useLocation } from 'react-router-dom'
 
 import Footer from '../components/Footer'
 import { Eye, EyeOff } from 'lucide-react'
@@ -15,6 +16,9 @@ function LoginPage() {
 
     const { login } = useAuth()
     const navigate = useNavigate()
+
+    const location = useLocation()
+    const successMessage = location.state?.message
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -43,6 +47,12 @@ function LoginPage() {
                     <p style={styles.subtitle}>Sign in to your account</p>
 
                     {error && <div style={styles.error}>{error}</div>}
+
+                    {successMessage && (
+                        <div style={styles.success}>
+                            {successMessage}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} style={styles.form}>
                         <div style={styles.inputGroup}>
@@ -203,6 +213,15 @@ const styles = {
         padding: 0,
         display: 'flex',
         alignItems: 'center',
+    },
+    success: {
+        backgroundColor: '#dcfce7',
+        color: '#16a34a',
+        padding: '12px',
+        borderRadius: '8px',
+        marginBottom: '16px',
+        fontSize: '14px',
+        textAlign: 'center',
     },
 }
 
