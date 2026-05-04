@@ -10,7 +10,7 @@ function TransferPage() {
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
     const [loading, setLoading] = useState(false)
-    const [idempotencyKey] = useState(() => uuidv4())
+    const [idempotencyKey, setIdempotencyKey] = useState(() => uuidv4())
 
     const formatAmount = (value) => {
         const numbers = value.replace(/[^0-9]/g, '')
@@ -35,10 +35,10 @@ function TransferPage() {
                 description,
                 idempotencyKey
             })
-            setSuccess('Transfer completed successfully!')
-            setToEmail('')
+            setSuccess(`₩${new Intl.NumberFormat('ko-KR').format(amount)} successfully sent to ${toEmail}`)
             setAmount('')
             setDescription('')
+            setIdempotencyKey(uuidv4())
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
         } finally {
