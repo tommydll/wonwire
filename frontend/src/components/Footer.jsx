@@ -10,9 +10,10 @@ function Footer() {
 
 const styles = {
     footer: {
-        position: 'fixed',
+        position: 'absolute',
         bottom: 0,
-        width: '100%',
+        left: 0,
+        right: 0,
         textAlign: 'center',
         padding: '12px',
         backgroundColor: 'white',
