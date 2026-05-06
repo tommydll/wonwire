@@ -12,6 +12,8 @@ function DashboardPage() {
     const [lastTransaction, setLastTransaction] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    throw new Error('Test error boundary')
+
     const greeting = () => {
         const hour = new Date().getHours()
         if (hour < 12) return 'Good morning'
@@ -44,7 +46,7 @@ function DashboardPage() {
     }, [])
 
     if (loading) return <PageLoader message="Loading your dashboard..." />
-    
+
     const isReceived = lastTransaction?.toEmail === user?.email
 
     return (
