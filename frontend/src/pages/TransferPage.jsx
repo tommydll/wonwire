@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { Send } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
 import api from '../api/axiosConfig'
 
 function TransferPage() {
@@ -67,6 +67,7 @@ function TransferPage() {
                             placeholder="recipient@email.com"
                             autoComplete="off"
                             required
+                            disabled={loading}
                         />
                     </div>
 
@@ -82,6 +83,7 @@ function TransferPage() {
                                 style={styles.amountInput}
                                 placeholder="0"
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -98,16 +100,23 @@ function TransferPage() {
                             style={styles.input}
                             placeholder="Lunch, rent, etc..."
                             autoComplete="off"
+                            disabled={loading}
                         />
                     </div>
 
                     <button
                         type="submit"
-                        style={styles.button}
+                        style={{
+                            ...styles.button,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                        }}
                         disabled={loading}
                     >
-                        <Send size={18} />
-                        {loading ? 'Sending...' : 'Send Money'}
+                        {loading
+                            ? <><Loader2 size={18} style={styles.spinIcon} /> Sending...</>
+                            : <><Send size={18} /> Send Money</>
+                        }
                     </button>
                 </form>
             </div>
@@ -179,6 +188,7 @@ const styles = {
         outline: 'none',
         width: '100%',
         boxSizing: 'border-box',
+        backgroundColor: 'white',
     },
     amountWrapper: {
         display: 'flex',
@@ -202,6 +212,7 @@ const styles = {
         outline: 'none',
         flex: 1,
         width: '100%',
+        backgroundColor: 'white',
     },
     button: {
         display: 'flex',
@@ -215,9 +226,11 @@ const styles = {
         borderRadius: '8px',
         fontSize: '16px',
         fontWeight: '600',
-        cursor: 'pointer',
         marginTop: '8px',
-        opacity: 1,
+        transition: 'opacity 0.2s',
+    },
+    spinIcon: {
+        animation: 'spin 0.7s linear infinite',
     },
 }
 

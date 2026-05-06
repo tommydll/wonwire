@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft } from 'lucide-react'
 import api from '../api/axiosConfig'
+import PageLoader from "../components/PageLoader.jsx";
 
 function DashboardPage() {
     const { user } = useAuth()
@@ -42,14 +43,8 @@ function DashboardPage() {
         fetchData()
     }, [])
 
-    if (loading) {
-        return (
-            <div style={styles.loadingContainer}>
-                <p style={styles.loadingText}>Loading...</p>
-            </div>
-        )
-    }
-
+    if (loading) return <PageLoader message="Loading your dashboard..." />
+    
     const isReceived = lastTransaction?.toEmail === user?.email
 
     return (

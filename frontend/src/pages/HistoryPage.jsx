@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/useAuth'
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
 import api from '../api/axiosConfig'
+import PageLoader from "../components/PageLoader.jsx";
 
 function HistoryPage() {
     const { user } = useAuth()
@@ -43,13 +44,7 @@ function HistoryPage() {
         fetchHistory()
     }, [currentPage])
 
-    if (loading) {
-        return (
-            <div style={styles.loadingContainer}>
-                <p style={styles.loadingText}>Loading...</p>
-            </div>
-        )
-    }
+    if (loading) return <PageLoader message="Loading your transactions..." />
 
     return (
         <div style={styles.container}>
