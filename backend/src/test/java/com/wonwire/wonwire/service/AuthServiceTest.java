@@ -59,7 +59,7 @@ class AuthServiceTest {
         registerRequest = new RegisterRequestDTO();
         registerRequest.setEmail("test@wonwire.com");
         registerRequest.setPassword("password123");
-        registerRequest.setFullName("Thomas Daulle");
+        registerRequest.setFullName("Test Wonwire");
 
         loginRequest = new LoginRequestDTO();
         loginRequest.setEmail("test@wonwire.com");
@@ -68,7 +68,7 @@ class AuthServiceTest {
         user = User.builder()
                 .email("test@wonwire.com")
                 .password("encodedPassword")
-                .fullName("Thomas Daulle")
+                .fullName("Test Wonwire")
                 .build();
     }
 
