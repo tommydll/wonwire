@@ -111,6 +111,13 @@
 			<version>5.0.1</version>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- TESTS -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
