@@ -4,6 +4,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import TransferPage from './pages/TransferPage'
 import HistoryPage from './pages/HistoryPage'
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {useAuth} from "./context/useAuth.js";
 import Layout from "./components/Layout.jsx";
@@ -31,6 +32,7 @@ function App() {
                     <Layout><HistoryPage /></Layout>
                 </ProtectedRoute>
             } />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     )
 }
