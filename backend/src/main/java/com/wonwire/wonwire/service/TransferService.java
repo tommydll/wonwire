@@ -123,6 +123,7 @@ public class TransferService {
                 .currency(transaction.getCurrency())
                 .description(transaction.getDescription())
                 .status(transaction.getStatus())
+                .type(transaction.getType())
                 .createdAt(transaction.getCreatedAt())
                 .build();
     }
