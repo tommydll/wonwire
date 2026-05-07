@@ -1,17 +1,20 @@
 import {useEffect, useState} from 'react'
 import { useWalletBalance } from '../hooks/useWalletBalance'
-import { v4 as uuidv4 } from 'uuid'
-import { Send, Loader2 } from 'lucide-react'
+import { Landmark, Loader2 } from 'lucide-react'
 import api from '../api/axiosConfig'
 
-function TransferPage() {
-    const [toEmail, setToEmail] = useState('')
+const PAYMENT_METHODS = [
+    { id: 'kakao', label: 'Kakao Pay', emoji: '💛' },
+    { id: 'toss', label: 'Toss', emoji: '🔵' },
+    { id: 'shinhan', label: 'Shinhan Bank', emoji: '🏦' },
+]
+
+function DepositPage() {
     const [amount, setAmount] = useState('')
-    const [description, setDescription] = useState('')
+    const [selectedMethod, setSelectedMethod] = useState(null)
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [idempotencyKey, setIdempotencyKey] = useState(() => uuidv4())
 
     const { currentBalance, balanceLoading, refetchBalance } = useWalletBalance()
 
@@ -31,22 +34,28 @@ function TransferPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        if (!selectedMethod) {
+            setError('Please select a payment method')
+            return
+        }
+
         setLoading(true)
         setError(null)
         setSuccess(null)
 
         try {
-            await api.post('/api/transfers', {
-                toEmail,
+            const response = await api.post('/api/wallet/deposit', {
                 amount: parseInt(amount),
-                description,
-                idempotencyKey
+                paymentMethod: selectedMethod.label,
             })
-            setSuccess(`₩${new Intl.NumberFormat('ko-KR').format(amount)} successfully sent to ${toEmail}`)
+            setSuccess({
+                amount: response.data.amount,
+                newBalance: response.data.newBalance,
+                paymentMethod: selectedMethod.label,
+            })
             refetchBalance()
             setAmount('')
-            setDescription('')
-            setIdempotencyKey(uuidv4())
+            setSelectedMethod(null)
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
         } finally {
@@ -56,11 +65,11 @@ function TransferPage() {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>Send Money</h1>
-            <p style={styles.subtitle}>Transfer funds to another WonWire user</p>
+            <h1 style={styles.title}>Deposit Funds</h1>
+            <p style={styles.subtitle}>Add money to your WonWire wallet</p>
 
             <div style={styles.balanceInfo}>
-                <p style={styles.balanceLabel}>Available Balance</p>
+                <p style={styles.balanceLabel}>Current Balance</p>
                 <p style={styles.balanceAmount}>
                     {balanceLoading
                         ? '...'
@@ -71,24 +80,17 @@ function TransferPage() {
 
             <div style={styles.card}>
                 {error && <div style={styles.error}>{error}</div>}
-                {success && <div style={styles.success}>{success}</div>}
+                {success && (
+                    <div style={styles.success}>
+                        <p style={styles.successTitle}>Deposit successful! 🎉</p>
+                        <p style={styles.successDetail}>
+                            ₩{new Intl.NumberFormat('ko-KR').format(success.amount)} added via {success.paymentMethod}
+                        </p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label} htmlFor="toEmail">Recipient Email</label>
-                        <input
-                            id="toEmail"
-                            type="text"
-                            value={toEmail}
-                            onChange={(e) => setToEmail(e.target.value)}
-                            style={styles.input}
-                            placeholder="recipient@email.com"
-                            autoComplete="off"
-                            required
-                            disabled={loading}
-                        />
-                    </div>
-
+                    {/* Amount */}
                     <div style={styles.inputGroup}>
                         <label style={styles.label} htmlFor="amount">Amount (₩)</label>
                         <div style={styles.amountWrapper}>
@@ -104,22 +106,30 @@ function TransferPage() {
                                 disabled={loading}
                             />
                         </div>
+                        <p style={styles.hint}>Minimum deposit: ₩1,000</p>
                     </div>
 
+                    {/* Payment method */}
                     <div style={styles.inputGroup}>
-                        <label style={styles.label} htmlFor="description">
-                            Description <span style={styles.optional}>(optional)</span>
-                        </label>
-                        <input
-                            id="description"
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            style={styles.input}
-                            placeholder="Lunch, rent, etc..."
-                            autoComplete="off"
-                            disabled={loading}
-                        />
+                        <label style={styles.label}>Payment Method</label>
+                        <div style={styles.methodGrid}>
+                            {PAYMENT_METHODS.map((method) => (
+                                <button
+                                    key={method.id}
+                                    type="button"
+                                    onClick={() => setSelectedMethod(method)}
+                                    disabled={loading}
+                                    style={{
+                                        ...styles.methodCard,
+                                        ...(selectedMethod?.id === method.id ? styles.methodCardActive : {}),
+                                        backgroundColor: selectedMethod?.id === method.id ? '#f0f0ff' : 'white',
+                                    }}
+                                >
+                                    <span style={styles.methodEmoji}>{method.emoji}</span>
+                                    <span style={styles.methodLabel}>{method.label}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <button
@@ -132,8 +142,8 @@ function TransferPage() {
                         disabled={loading}
                     >
                         {loading
-                            ? <><Loader2 size={18} style={styles.spinIcon} /> Sending...</>
-                            : <><Send size={18} /> Send Money</>
+                            ? <><Loader2 size={18} style={styles.spinIcon} /> Processing...</>
+                            : <><Landmark size={18} /> Deposit</>
                         }
                     </button>
                 </form>
@@ -193,15 +203,27 @@ const styles = {
     success: {
         backgroundColor: '#dcfce7',
         color: '#16a34a',
-        padding: '12px',
+        padding: '16px',
         borderRadius: '8px',
         marginBottom: '16px',
+    },
+    successTitle: {
+        fontWeight: '700',
+        fontSize: '15px',
+        marginBottom: '4px',
+    },
+    successDetail: {
         fontSize: '14px',
+        marginBottom: '2px',
+    },
+    successBalance: {
+        fontSize: '14px',
+        fontWeight: '600',
     },
     form: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
+        gap: '24px',
     },
     inputGroup: {
         display: 'flex',
@@ -212,20 +234,6 @@ const styles = {
         fontSize: '14px',
         fontWeight: '500',
         color: '#333',
-    },
-    optional: {
-        color: '#999',
-        fontWeight: '400',
-    },
-    input: {
-        padding: '12px',
-        borderRadius: '8px',
-        border: '1px solid #ddd',
-        fontSize: '16px',
-        outline: 'none',
-        width: '100%',
-        boxSizing: 'border-box',
-        backgroundColor: 'white',
     },
     amountWrapper: {
         display: 'flex',
@@ -248,8 +256,40 @@ const styles = {
         fontSize: '16px',
         outline: 'none',
         flex: 1,
-        width: '100%',
         backgroundColor: 'white',
+    },
+    hint: {
+        fontSize: '12px',
+        color: '#999',
+    },
+    methodGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '12px',
+    },
+    methodCard: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '16px 8px',
+        backgroundColor: '#f9f9f9',
+        border: '2px solid #eee',
+        borderRadius: '12px',
+        outline: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+    },
+    methodCardActive: {
+        border: '2px solid #1a1a2e',
+    },
+    methodEmoji: {
+        fontSize: '24px',
+    },
+    methodLabel: {
+        fontSize: '13px',
+        fontWeight: '600',
+        color: '#1a1a2e',
     },
     button: {
         display: 'flex',
@@ -271,4 +311,4 @@ const styles = {
     },
 }
 
-export default TransferPage
+export default DepositPage

@@ -1,4 +1,4 @@
-import Sidebar from './Sidebar'
+import Sidebar from './SideBar.jsx'
 import Footer from './Footer'
 
 function Layout({ children }) {

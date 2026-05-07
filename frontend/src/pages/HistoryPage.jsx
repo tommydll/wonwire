@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/useAuth'
-import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { ArrowUpRight, ArrowDownLeft, Landmark } from 'lucide-react'
 import api from '../api/axiosConfig'
 import PageLoader from "../components/PageLoader.jsx";
 
@@ -62,23 +62,31 @@ function HistoryPage() {
                 <>
                     <div style={styles.list}>
                         {transactions.map((tx) => {
-                            const isReceived = tx.toEmail === user?.email
+                            const isDeposit = tx.type === 'DEPOSIT'
+                            const isReceived = !isDeposit && tx.toEmail === user?.email
                             return (
                                 <div key={tx.transactionId} style={styles.transactionCard}>
                                     <div style={{
                                         ...styles.transactionIcon,
-                                        backgroundColor: isReceived ? '#dcfce7' : '#fee2e2'
+                                        backgroundColor: isDeposit ? '#dbeafe' : isReceived ? '#dcfce7' : '#fee2e2'
                                     }}>
-                                        {isReceived
-                                            ? <ArrowDownLeft size={20} color="#16a34a" />
-                                            : <ArrowUpRight size={20} color="#dc2626" />
+                                        {isDeposit
+                                            ? <Landmark size={20} color="#2563eb" />
+                                            : isReceived
+                                                ? <ArrowDownLeft size={20} color="#16a34a" />
+                                                : <ArrowUpRight size={20} color="#dc2626" />
                                         }
                                     </div>
                                     <div style={styles.transactionInfo}>
                                         <p style={styles.transactionName}>
-                                            {isReceived ? `From ${tx.fromEmail}` : `To ${tx.toEmail}`}
+                                            {isDeposit
+                                                ? `Deposit via ${tx.description?.replace('Deposit via ', '')}`
+                                                : isReceived
+                                                    ? `From ${tx.fromEmail}`
+                                                    : `To ${tx.toEmail}`
+                                            }
                                         </p>
-                                        {tx.description && (
+                                        {!isDeposit && tx.description && (
                                             <p style={styles.transactionDescription}>{tx.description}</p>
                                         )}
                                         <p style={styles.transactionDate}>{formatDate(tx.createdAt)}</p>
@@ -86,9 +94,9 @@ function HistoryPage() {
                                     <div style={styles.transactionRight}>
                                         <p style={{
                                             ...styles.transactionAmount,
-                                            color: isReceived ? '#16a34a' : '#dc2626'
+                                            color: isDeposit ? '#2563eb' : isReceived ? '#16a34a' : '#dc2626'
                                         }}>
-                                            {isReceived ? '+' : '-'}₩{formatAmount(tx.amount)}
+                                            {isDeposit ? '+' : isReceived ? '+' : '-'}₩{formatAmount(tx.amount)}
                                         </p>
                                         <p style={styles.transactionStatus}>{tx.status}</p>
                                     </div>

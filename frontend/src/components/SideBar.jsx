@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
-import { LayoutDashboard, ArrowRightLeft, History, LogOut } from 'lucide-react'
+import { LayoutDashboard, ArrowRightLeft, History, Landmark, LogOut } from 'lucide-react'
 
 function Sidebar() {
     const { user, logout } = useAuth()
@@ -36,6 +36,14 @@ function Sidebar() {
                 })}>
                     <ArrowRightLeft size={20} />
                     <span>Transfer</span>
+                </NavLink>
+
+                <NavLink to="/deposit" style={({ isActive }) => ({
+                    ...styles.navItem,
+                    ...(isActive ? styles.navItemActive : {})
+                })}>
+                    <Landmark size={20} />
+                    <span>Deposit</span>
                 </NavLink>
 
                 <NavLink to="/history" style={({ isActive }) => ({

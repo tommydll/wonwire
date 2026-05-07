@@ -8,6 +8,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {useAuth} from "./context/useAuth.js";
 import Layout from "./components/Layout.jsx";
+import DepositPage from "./pages/DepositPage.jsx";
 
 function App() {
     const { user } = useAuth()
@@ -25,6 +26,11 @@ function App() {
             <Route path="/transfer" element={
                 <ProtectedRoute>
                     <Layout><TransferPage /></Layout>
+                </ProtectedRoute>
+            } />
+            <Route path="/deposit" element={
+                <ProtectedRoute>
+                    <Layout><DepositPage /></Layout>
                 </ProtectedRoute>
             } />
             <Route path="/history" element={
