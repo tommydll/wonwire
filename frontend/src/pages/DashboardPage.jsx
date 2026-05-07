@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
-import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft } from 'lucide-react'
+import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Landmark } from 'lucide-react'
 import api from '../api/axiosConfig'
 import PageLoader from "../components/PageLoader.jsx";
 
@@ -21,6 +21,16 @@ function DashboardPage() {
 
     const formatBalance = (amount) => {
         return new Intl.NumberFormat('ko-KR').format(amount)
+    }
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
     }
 
     useEffect(() => {
@@ -45,7 +55,8 @@ function DashboardPage() {
 
     if (loading) return <PageLoader message="Loading your dashboard..." />
 
-    const isReceived = lastTransaction?.toEmail === user?.email
+    const isDeposit = lastTransaction?.type === 'DEPOSIT'
+    const isReceived = !isDeposit && lastTransaction?.toEmail === user?.email
 
     return (
         <div style={styles.container}>
@@ -77,21 +88,28 @@ function DashboardPage() {
                     <div style={styles.transactionCard}>
                         <div style={{
                             ...styles.transactionIcon,
-                            backgroundColor: isReceived ? '#dcfce7' : '#fee2e2'
+                            backgroundColor: isDeposit ? '#dbeafe' : isReceived ? '#dcfce7' : '#fee2e2'
                         }}>
-                            {isReceived
-                                ? <ArrowDownLeft size={20} color="#16a34a" />
-                                : <ArrowUpRight size={20} color="#dc2626" />
+                            {isDeposit
+                                ? <Landmark size={20} color="#2563eb" />
+                                : isReceived
+                                    ? <ArrowDownLeft size={20} color="#16a34a" />
+                                    : <ArrowUpRight size={20} color="#dc2626" />
                             }
                         </div>
                         <div style={styles.transactionInfo}>
                             <p style={styles.transactionName}>
-                                {isReceived ? `From ${lastTransaction.fromEmail}` : `To ${lastTransaction.toEmail}`}
+                                {isDeposit
+                                    ? `Deposit via ${lastTransaction.description?.replace('Deposit via ', '')}`
+                                    : isReceived
+                                        ? `From ${lastTransaction.fromEmail}`
+                                        : `To ${lastTransaction.toEmail}`
+                                }
                             </p>
                             <p style={styles.transactionDate}>
-                                {new Date(lastTransaction.createdAt).toLocaleDateString('ko-KR')}
+                                {formatDate(lastTransaction.createdAt)}
                             </p>
-                            {lastTransaction.description && (
+                            {!isDeposit && lastTransaction.description && (
                                 <p style={styles.transactionDescription}>
                                     {lastTransaction.description}
                                 </p>
@@ -99,9 +117,9 @@ function DashboardPage() {
                         </div>
                         <p style={{
                             ...styles.transactionAmount,
-                            color: isReceived ? '#16a34a' : '#dc2626'
+                            color: isDeposit ? '#2563eb' : isReceived ? '#16a34a' : '#dc2626'
                         }}>
-                            {isReceived ? '+' : '-'}₩{formatBalance(lastTransaction.amount)}
+                            {isDeposit ? '+' : isReceived ? '+' : '-'}₩{formatBalance(lastTransaction.amount)}
                         </p>
                     </div>
                 ) : (
