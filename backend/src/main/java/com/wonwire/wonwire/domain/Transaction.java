@@ -1,6 +1,8 @@
 package com.wonwire.wonwire.domain;
 
 import com.wonwire.wonwire.domain.enums.Currency;
+import com.wonwire.wonwire.domain.enums.TransactionStatus;
+import com.wonwire.wonwire.domain.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -29,17 +31,21 @@ public class Transaction {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     /**
      * The currency in which this transaction was made.
      * Must match the sender's wallet currency.
      */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Currency currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionType type;
 
     /**
      * Idempotency key: guarantees that the same transfer cannot be executed twice.
@@ -59,9 +65,5 @@ public class Transaction {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-    }
-
-    public enum TransactionStatus {
-        PENDING, SUCCESS, FAILED
     }
 }

@@ -1,7 +1,7 @@
 package com.wonwire.wonwire.dto;
 
-import com.wonwire.wonwire.domain.Transaction.TransactionStatus;
 import com.wonwire.wonwire.domain.enums.Currency;
+import com.wonwire.wonwire.domain.enums.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

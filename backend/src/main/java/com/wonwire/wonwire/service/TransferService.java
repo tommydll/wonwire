@@ -1,9 +1,10 @@
 package com.wonwire.wonwire.service;
 
 import com.wonwire.wonwire.domain.Transaction;
-import com.wonwire.wonwire.domain.Transaction.TransactionStatus;
 import com.wonwire.wonwire.domain.User;
 import com.wonwire.wonwire.domain.Wallet;
+import com.wonwire.wonwire.domain.enums.TransactionStatus;
+import com.wonwire.wonwire.domain.enums.TransactionType;
 import com.wonwire.wonwire.dto.TransactionResponseDTO;
 import com.wonwire.wonwire.dto.TransferRequestDTO;
 import com.wonwire.wonwire.dto.TransferResponseDTO;
@@ -82,6 +83,7 @@ public class TransferService {
                 .description(request.getDescription())
                 .idempotencyKey(request.getIdempotencyKey())
                 .status(TransactionStatus.SUCCESS)
+                .type(TransactionType.TRANSFER)
                 .build();
 
         transactionRepository.save(transaction);
