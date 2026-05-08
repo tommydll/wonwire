@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {useAuth} from "./context/useAuth.js";
 import Layout from "./components/Layout.jsx";
 import DepositPage from "./pages/DepositPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 function App() {
     const { user } = useAuth()
@@ -40,6 +41,11 @@ function App() {
             <Route path="/history" element={
                 <ProtectedRoute>
                     <Layout><HistoryPage /></Layout>
+                </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+                <ProtectedRoute>
+                    <Layout><ProfilePage /></Layout>
                 </ProtectedRoute>
             } />
             <Route path="*" element={<NotFoundPage />} />

@@ -1,10 +1,13 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { LayoutDashboard, ArrowRightLeft, History, Landmark, LogOut } from 'lucide-react'
+import { useState } from 'react'
 
 function Sidebar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const [profileHovered, setProfileHovered] = useState(false)
+    const [logoutHovered, setLogoutHovered] = useState(false)
 
     const handleLogout = () => {
         logout()
@@ -56,14 +59,32 @@ function Sidebar() {
             </nav>
 
             <div style={styles.userSection}>
-                <div style={styles.avatar}>
-                    <span style={styles.initials}>{initials}</span>
+                <div
+                    style={{
+                        ...styles.userProfile,
+                        backgroundColor: profileHovered ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    }}
+                    onClick={() => navigate('/profile')}
+                    onMouseEnter={() => setProfileHovered(true)}
+                    onMouseLeave={() => setProfileHovered(false)}
+                >
+                    <div style={styles.avatar}>
+                        <span style={styles.initials}>{initials}</span>
+                    </div>
+                    <div style={styles.userInfo}>
+                        <p style={styles.userName}>{user?.firstName} {user?.lastName}</p>
+                        <p style={styles.userEmail}>{user?.email}</p>
+                    </div>
                 </div>
-                <div style={styles.userInfo}>
-                    <p style={styles.userName}>{user?.firstName} {user?.lastName}</p>
-                    <p style={styles.userEmail}>{user?.email}</p>
-                </div>
-                <button onClick={handleLogout} style={styles.logoutButton}>
+                <button
+                    onClick={handleLogout}
+                    style={{
+                        ...styles.logoutButton,
+                        color: logoutHovered ? '#ef4444' : '#8888aa',
+                    }}
+                    onMouseEnter={() => setLogoutHovered(true)}
+                    onMouseLeave={() => setLogoutHovered(false)}
+                >
                     <LogOut size={18} />
                 </button>
             </div>
@@ -118,10 +139,10 @@ const styles = {
     userSection: {
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '12px',
+        gap: '4px',
         borderTop: '1px solid rgba(255,255,255,0.1)',
         marginTop: 'auto',
+        paddingTop: '8px',
     },
     avatar: {
         width: '36px',
@@ -166,6 +187,17 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         flexShrink: 0,
+    },
+    userProfile: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '8px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s',
+        flex: 1,
+        overflow: 'hidden',
     },
 }
 
