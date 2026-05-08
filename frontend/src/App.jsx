@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import DashboardPage from './pages/DashboardPage'
 import TransferPage from './pages/TransferPage'
 import HistoryPage from './pages/HistoryPage'
@@ -18,6 +20,8 @@ function App() {
             <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} />} />
             <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
             <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+            <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />} />
+            <Route path="/reset-password" element={user ? <Navigate to="/dashboard" replace /> : <ResetPasswordPage />} />
             <Route path="/dashboard" element={
                 <ProtectedRoute>
                     <Layout><DashboardPage /></Layout>

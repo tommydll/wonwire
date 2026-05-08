@@ -104,6 +104,9 @@ function LoginPage() {
                     <p style={styles.link}>
                         Don't have an account? <Link to="/register">Register</Link>
                     </p>
+                    <p style={styles.link}>
+                        <Link to="/forgot-password">Forgot your password?</Link>
+                    </p>
                 </div>
             </div>
             <Footer />
