@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,4 +43,37 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      */
     @Query("SELECT DISTINCT t.sender FROM Transaction t WHERE t.receiver = :user AND t.type = :type")
     List<User> findSendersByReceiver(@Param("user") User user, @Param("type") TransactionType type);
+
+    @Query(value = """
+    SELECT EXTRACT(YEAR FROM t.created_at) as year,
+           EXTRACT(MONTH FROM t.created_at) as month,
+           SUM(t.amount) as total
+    FROM transactions t
+    WHERE t.sender_id = :userId
+    AND t.type = 'TRANSFER'
+    AND t.created_at >= :since
+    GROUP BY EXTRACT(YEAR FROM t.created_at), EXTRACT(MONTH FROM t.created_at)
+    ORDER BY year, month
+    """, nativeQuery = true)
+    List<Object[]> findMonthlySentByUser(
+            @Param("userId") Long userId,
+            @Param("since") LocalDateTime since
+    );
+
+    @Query(value = """
+    SELECT EXTRACT(YEAR FROM t.created_at) as year,
+           EXTRACT(MONTH FROM t.created_at) as month,
+           SUM(t.amount) as total
+    FROM transactions t
+    WHERE t.receiver_id = :userId
+    AND t.sender_id != :userId
+    AND t.type = 'TRANSFER'
+    AND t.created_at >= :since
+    GROUP BY EXTRACT(YEAR FROM t.created_at), EXTRACT(MONTH FROM t.created_at)
+    ORDER BY year, month
+    """, nativeQuery = true)
+    List<Object[]> findMonthlyReceivedByUser(
+            @Param("userId") Long userId,
+            @Param("since") LocalDateTime since
+    );
 }
