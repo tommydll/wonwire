@@ -12,12 +12,9 @@ function TransferPage() {
     const [success, setSuccess] = useState(null)
     const [loading, setLoading] = useState(false)
     const [idempotencyKey, setIdempotencyKey] = useState(() => uuidv4())
+    const [contacts, setContacts] = useState([])
 
     const { currentBalance, balanceLoading, refetchBalance } = useWalletBalance()
-
-    useEffect(() => {
-        refetchBalance()
-    }, [refetchBalance])
 
     const formatAmount = (value) => {
         const numbers = value.replace(/[^0-9]/g, '')
@@ -44,6 +41,9 @@ function TransferPage() {
             })
             setSuccess(`₩${new Intl.NumberFormat('ko-KR').format(amount)} successfully sent to ${toEmail}`)
             refetchBalance()
+            api.get('/api/contacts')
+                .then(res => setContacts(res.data))
+                .catch(err => console.error('Failed to fetch contacts', err))
             setAmount('')
             setDescription('')
             setIdempotencyKey(uuidv4())
@@ -54,97 +54,148 @@ function TransferPage() {
         }
     }
 
+    useEffect(() => {
+        refetchBalance()
+        api.get('/api/contacts')
+            .then(res => setContacts(res.data))
+            .catch(err => console.error('Failed to fetch contacts', err))
+    }, [refetchBalance])
+
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>Send Money</h1>
-            <p style={styles.subtitle}>Transfer funds to another WonWire user</p>
+        <div style={styles.wrapper}>
+            <div style={styles.left}>
+                <h1 style={styles.title}>Send Money</h1>
+                <p style={styles.subtitle}>Transfer funds to another WonWire user</p>
 
-            <div style={styles.balanceInfo}>
-                <p style={styles.balanceLabel}>Available Balance</p>
-                <p style={styles.balanceAmount}>
-                    {balanceLoading
-                        ? '...'
-                        : `₩${new Intl.NumberFormat('ko-KR').format(currentBalance)}`
-                    }
-                </p>
-            </div>
+                <div style={styles.balanceInfo}>
+                    <p style={styles.balanceLabel}>Available Balance</p>
+                    <p style={styles.balanceAmount}>
+                        {balanceLoading
+                            ? '...'
+                            : `₩${new Intl.NumberFormat('ko-KR').format(currentBalance)}`
+                        }
+                    </p>
+                </div>
 
-            <div style={styles.card}>
-                {error && <div style={styles.error}>{error}</div>}
-                {success && <div style={styles.success}>{success}</div>}
+                <div style={styles.card}>
+                    {error && <div style={styles.error}>{error}</div>}
+                    {success && <div style={styles.success}>{success}</div>}
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label} htmlFor="toEmail">Recipient Email</label>
-                        <input
-                            id="toEmail"
-                            type="text"
-                            value={toEmail}
-                            onChange={(e) => setToEmail(e.target.value)}
-                            style={styles.input}
-                            placeholder="recipient@email.com"
-                            autoComplete="off"
-                            required
-                            disabled={loading}
-                        />
-                    </div>
-
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label} htmlFor="amount">Amount (₩)</label>
-                        <div style={styles.amountWrapper}>
-                            <span style={styles.currency}>₩</span>
+                    <form onSubmit={handleSubmit} style={styles.form}>
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label} htmlFor="toEmail">Recipient Email</label>
                             <input
-                                id="amount"
+                                id="toEmail"
                                 type="text"
-                                value={formatAmount(amount)}
-                                onChange={handleAmountChange}
-                                style={styles.amountInput}
-                                placeholder="0"
+                                value={toEmail}
+                                onChange={(e) => setToEmail(e.target.value)}
+                                style={styles.input}
+                                placeholder="recipient@email.com"
+                                autoComplete="off"
                                 required
                                 disabled={loading}
                             />
                         </div>
-                    </div>
 
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label} htmlFor="description">
-                            Description <span style={styles.optional}>(optional)</span>
-                        </label>
-                        <input
-                            id="description"
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            style={styles.input}
-                            placeholder="Lunch, rent, etc..."
-                            autoComplete="off"
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label} htmlFor="amount">Amount (₩)</label>
+                            <div style={styles.amountWrapper}>
+                                <span style={styles.currency}>₩</span>
+                                <input
+                                    id="amount"
+                                    type="text"
+                                    value={formatAmount(amount)}
+                                    onChange={handleAmountChange}
+                                    style={styles.amountInput}
+                                    placeholder="0"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label} htmlFor="description">
+                                Description <span style={styles.optional}>(optional)</span>
+                            </label>
+                            <input
+                                id="description"
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                style={styles.input}
+                                placeholder="Lunch, rent, etc..."
+                                autoComplete="off"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            style={{
+                                ...styles.button,
+                                opacity: loading ? 0.7 : 1,
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                            }}
                             disabled={loading}
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        style={{
-                            ...styles.button,
-                            opacity: loading ? 0.7 : 1,
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                        }}
-                        disabled={loading}
-                    >
-                        {loading
-                            ? <><Loader2 size={18} style={styles.spinIcon} /> Sending...</>
-                            : <><Send size={18} /> Send Money</>
-                        }
-                    </button>
-                </form>
+                        >
+                            {loading
+                                ? <><Loader2 size={18} style={styles.spinIcon} /> Sending...</>
+                                : <><Send size={18} /> Send Money</>
+                            }
+                        </button>
+                    </form>
+                </div>
             </div>
+
+            {contacts.length > 0 && (
+                <div style={styles.right}>
+                    <p style={styles.contactsLabel}>Recent contacts</p>
+                    <div style={styles.contactsList}>
+                        {contacts.map((contact) => (
+                            <button
+                                key={contact.email}
+                                type="button"
+                                onClick={() => setToEmail(contact.email)}
+                                style={{
+                                    ...styles.contactChip,
+                                    ...(toEmail === contact.email ? styles.contactChipActive : {}),
+                                    backgroundColor: toEmail === contact.email ? 'white' : 'white',
+                                }}
+                            >
+                                <div style={{
+                                    ...styles.contactAvatar,
+                                    ...(toEmail === contact.email ? styles.contactAvatarActive : {})
+                                }}>
+                                    {contact.fullName.charAt(0).toUpperCase()}
+                                </div>
+                                <div style={styles.contactInfo}>
+                                    <span style={styles.contactName}>{contact.fullName}</span>
+                                    <span style={styles.contactEmail}>{contact.email}</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
 
 const styles = {
-    container: {
-        maxWidth: '600px',
+    wrapper: {
+        display: 'flex',
+        gap: '32px',
+        alignItems: 'flex-start',
+        maxWidth: '1000px',
+    },
+    left: {
+        flex: 1,
+        minWidth: 0,
+    },
+    right: {
+        width: '280px',
+        flexShrink: 0,
     },
     title: {
         fontSize: '28px',
@@ -268,6 +319,68 @@ const styles = {
     },
     spinIcon: {
         animation: 'spin 0.7s linear infinite',
+    },
+    contactsLabel: {
+        fontSize: '13px',
+        fontWeight: '500',
+        color: '#999',
+        marginBottom: '12px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+    },
+    contactsList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+    },
+    contactChip: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 14px',
+        backgroundColor: 'white',
+        border: '2px solid transparent',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        textAlign: 'left',
+        outline: 'none',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        width: '100%',
+        transition: 'border-color 0.15s',
+    },
+    contactChipActive: {
+        border: '2px solid #1a1a2e',
+    },
+    contactAvatar: {
+        width: '36px',
+        height: '36px',
+        borderRadius: '50%',
+        backgroundColor: '#e8e8f0',
+        color: '#1a1a2e',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '700',
+        fontSize: '14px',
+        flexShrink: 0,
+    },
+    contactAvatarActive: {
+        backgroundColor: '#1a1a2e',
+        color: 'white',
+    },
+    contactInfo: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2px',
+    },
+    contactName: {
+        fontSize: '14px',
+        fontWeight: '600',
+        color: '#1a1a2e',
+    },
+    contactEmail: {
+        fontSize: '12px',
+        color: '#999',
     },
 }
 
