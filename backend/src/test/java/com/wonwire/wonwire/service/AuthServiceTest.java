@@ -1,13 +1,13 @@
 package com.wonwire.wonwire.service;
 
+import com.wonwire.wonwire.domain.PasswordResetToken;
 import com.wonwire.wonwire.domain.User;
 import com.wonwire.wonwire.domain.Wallet;
-import com.wonwire.wonwire.dto.AuthResponseDTO;
-import com.wonwire.wonwire.dto.LoginRequestDTO;
-import com.wonwire.wonwire.dto.MessageResponseDTO;
-import com.wonwire.wonwire.dto.RegisterRequestDTO;
+import com.wonwire.wonwire.dto.*;
+import com.wonwire.wonwire.exception.InvalidTokenException;
 import com.wonwire.wonwire.exception.UserAlreadyExistsException;
 import com.wonwire.wonwire.exception.UserNotFoundException;
+import com.wonwire.wonwire.repository.PasswordResetTokenRepository;
 import com.wonwire.wonwire.repository.UserRepository;
 import com.wonwire.wonwire.repository.WalletRepository;
 import com.wonwire.wonwire.security.JwtService;
@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +47,12 @@ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private AuthService authService;
@@ -139,5 +146,128 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.login(loginRequest))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining(loginRequest.getEmail());
+    }
+
+    // -------------------------------------------------------------------------
+    // forgotPassword()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void forgotPassword_ShouldSendEmail_WhenUserExists() {
+        // Given
+        ForgotPasswordRequestDTO request = new ForgotPasswordRequestDTO();
+        request.setEmail("test@wonwire.com");
+        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
+
+        // When
+        authService.forgotPassword(request);
+
+        // Then
+        verify(passwordResetTokenRepository, times(1)).deleteByUser(user);
+        verify(passwordResetTokenRepository, times(1)).save(any(PasswordResetToken.class));
+        verify(emailService, times(1)).sendPasswordResetEmail(eq(user.getEmail()), anyString());
+    }
+
+    @Test
+    void forgotPassword_ShouldDoNothing_WhenUserDoesNotExist() {
+        // Given
+        ForgotPasswordRequestDTO request = new ForgotPasswordRequestDTO();
+        request.setEmail("unknown@wonwire.com");
+        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+
+        // When
+        authService.forgotPassword(request);
+
+        // Then — no email sent, no token saved
+        verify(passwordResetTokenRepository, never()).save(any());
+        verify(emailService, never()).sendPasswordResetEmail(anyString(), anyString());
+    }
+
+    // -------------------------------------------------------------------------
+    // resetPassword()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void resetPassword_ShouldUpdatePassword_WhenTokenIsValid() {
+        // Given
+        ResetPasswordRequestDTO request = new ResetPasswordRequestDTO();
+        request.setToken("valid-token");
+        request.setNewPassword("newPassword123");
+
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .token("valid-token")
+                .user(user)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .used(false)
+                .build();
+
+        when(passwordResetTokenRepository.findByToken("valid-token")).thenReturn(Optional.of(resetToken));
+        when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
+
+        // When
+        authService.resetPassword(request);
+
+        // Then
+        assertThat(user.getPassword()).isEqualTo("encodedNewPassword");
+        assertThat(resetToken.isUsed()).isTrue();
+        verify(userRepository, times(1)).save(user);
+        verify(passwordResetTokenRepository, times(1)).save(resetToken);
+    }
+
+    @Test
+    void resetPassword_ShouldThrowInvalidTokenException_WhenTokenNotFound() {
+        // Given
+        ResetPasswordRequestDTO request = new ResetPasswordRequestDTO();
+        request.setToken("invalid-token");
+        request.setNewPassword("newPassword123");
+        when(passwordResetTokenRepository.findByToken("invalid-token")).thenReturn(Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> authService.resetPassword(request))
+                .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @Test
+    void resetPassword_ShouldThrowInvalidTokenException_WhenTokenIsExpired() {
+        // Given
+        ResetPasswordRequestDTO request = new ResetPasswordRequestDTO();
+        request.setToken("expired-token");
+        request.setNewPassword("newPassword123");
+
+        PasswordResetToken expiredToken = PasswordResetToken.builder()
+                .token("expired-token")
+                .user(user)
+                .expiresAt(LocalDateTime.now().minusMinutes(1))
+                .used(false)
+                .build();
+
+        when(passwordResetTokenRepository.findByToken("expired-token")).thenReturn(Optional.of(expiredToken));
+
+        // When / Then
+        assertThatThrownBy(() -> authService.resetPassword(request))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessageContaining("expired");
+    }
+
+    @Test
+    void resetPassword_ShouldThrowInvalidTokenException_WhenTokenAlreadyUsed() {
+        // Given
+        ResetPasswordRequestDTO request = new ResetPasswordRequestDTO();
+        request.setToken("used-token");
+        request.setNewPassword("newPassword123");
+
+        PasswordResetToken usedToken = PasswordResetToken.builder()
+                .token("used-token")
+                .user(user)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .used(true)
+                .build();
+
+        when(passwordResetTokenRepository.findByToken("used-token")).thenReturn(Optional.of(usedToken));
+
+        // When / Then
+        assertThatThrownBy(() -> authService.resetPassword(request))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessageContaining("already been used");
     }
 }
