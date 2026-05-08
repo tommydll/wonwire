@@ -167,10 +167,10 @@ function TransferPage() {
                                     ...styles.contactAvatar,
                                     ...(toEmail === contact.email ? styles.contactAvatarActive : {})
                                 }}>
-                                    {contact.fullName.charAt(0).toUpperCase()}
+                                    {contact.firstName.charAt(0).toUpperCase()}
                                 </div>
                                 <div style={styles.contactInfo}>
-                                    <span style={styles.contactName}>{contact.fullName}</span>
+                                    <span style={styles.contactName}>{contact.firstName} {contact.lastName}</span>
                                     <span style={styles.contactEmail}>{contact.email}</span>
                                 </div>
                             </button>

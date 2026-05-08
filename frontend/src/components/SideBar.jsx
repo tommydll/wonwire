@@ -11,8 +11,8 @@ function Sidebar() {
         navigate('/login')
     }
 
-    const initials = user?.fullName
-        ? user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+    const initials = (user?.firstName && user?.lastName)
+        ? (user.firstName[0] + user.lastName[0]).toUpperCase()
         : '?'
 
     return (
@@ -60,7 +60,7 @@ function Sidebar() {
                     <span style={styles.initials}>{initials}</span>
                 </div>
                 <div style={styles.userInfo}>
-                    <p style={styles.userName}>{user?.fullName}</p>
+                    <p style={styles.userName}>{user?.firstName} {user?.lastName}</p>
                     <p style={styles.userEmail}>{user?.email}</p>
                 </div>
                 <button onClick={handleLogout} style={styles.logoutButton}>

@@ -65,7 +65,7 @@ function DashboardPage() {
     return (
         <div style={styles.container}>
             <h1 style={styles.greeting}>
-                {greeting()}, {user?.fullName?.split(' ')[0]} 👋
+                {greeting()}, {user?.firstName} 👋
             </h1>
             <p style={styles.subtitle}>Here's your financial overview</p>
 

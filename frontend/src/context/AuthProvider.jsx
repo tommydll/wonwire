@@ -5,21 +5,24 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
         const token = localStorage.getItem('token')
         const email = localStorage.getItem('email')
-        const fullName = localStorage.getItem('fullName')
-        return token ? { token, email, fullName } : null
+        const firstName = localStorage.getItem('firstName')
+        const lastName = localStorage.getItem('lastName')
+        return token ? { token, email, firstName, lastName } : null
     })
 
     const login = (userData) => {
         localStorage.setItem('token', userData.token)
         localStorage.setItem('email', userData.email)
-        localStorage.setItem('fullName', userData.fullName)
+        localStorage.setItem('firstName', userData.firstName)
+        localStorage.setItem('lastName', userData.lastName)
         setUser(userData)
     }
 
     const logout = () => {
         localStorage.removeItem('token')
         localStorage.removeItem('email')
-        localStorage.removeItem('fullName')
+        localStorage.removeItem('firstName')
+        localStorage.removeItem('lastName')
         setUser(null)
     }
 

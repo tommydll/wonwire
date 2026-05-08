@@ -5,7 +5,8 @@ import api from '../api/axiosConfig'
 import Footer from '../components/Footer'
 
 function RegisterPage() {
-    const [fullName, setFullName] = useState('')
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
@@ -23,7 +24,8 @@ function RegisterPage() {
             await api.post('/api/auth/register', {
                 email,
                 password,
-                fullName
+                firstName,
+                lastName
             })
             navigate('/login', {
                 state: { message: 'Account created successfully. Please sign in.' }
@@ -47,14 +49,28 @@ function RegisterPage() {
 
                     <form onSubmit={handleSubmit} style={styles.form}>
                         <div style={styles.inputGroup}>
-                            <label style={styles.label} htmlFor="fullName">Full Name</label>
+                            <label style={styles.label} htmlFor="firstName">First Name</label>
                             <input
-                                id="fullName"
+                                id="firstName"
                                 type="text"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
                                 style={styles.input}
-                                placeholder="Lee Minjeong"
+                                placeholder="Minjeong"
+                                autoComplete="off"
+                                required
+                            />
+                        </div>
+
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label} htmlFor="lastName">Last Name</label>
+                            <input
+                                id="lastName"
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                style={styles.input}
+                                placeholder="Lee"
                                 autoComplete="off"
                                 required
                             />
