@@ -1,14 +1,14 @@
 package com.wonwire.wonwire.service;
 
+import com.wonwire.wonwire.domain.PasswordResetToken;
 import com.wonwire.wonwire.domain.User;
 import com.wonwire.wonwire.domain.Wallet;
 import com.wonwire.wonwire.domain.enums.Currency;
-import com.wonwire.wonwire.dto.AuthResponseDTO;
-import com.wonwire.wonwire.dto.LoginRequestDTO;
-import com.wonwire.wonwire.dto.MessageResponseDTO;
-import com.wonwire.wonwire.dto.RegisterRequestDTO;
+import com.wonwire.wonwire.dto.*;
+import com.wonwire.wonwire.exception.InvalidTokenException;
 import com.wonwire.wonwire.exception.UserAlreadyExistsException;
 import com.wonwire.wonwire.exception.UserNotFoundException;
+import com.wonwire.wonwire.repository.PasswordResetTokenRepository;
 import com.wonwire.wonwire.repository.UserRepository;
 import com.wonwire.wonwire.repository.WalletRepository;
 import com.wonwire.wonwire.security.JwtService;
@@ -18,8 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,9 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
 
     /**
      * Registers a new user, creates an associated wallet with zero balance.
@@ -84,5 +89,56 @@ public class AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .build();
+    }
+
+    /**
+     * Generates a password reset token and sends a reset email.
+     * If the user doesn't exist, we still return a success message to avoid exposing whether an email is registered or not.
+     */
+    @Transactional
+    public MessageResponseDTO forgotPassword(ForgotPasswordRequestDTO request) {
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            // Invalidate any existing token for this user
+            passwordResetTokenRepository.deleteByUser(user);
+
+            String token = UUID.randomUUID().toString();
+            PasswordResetToken resetToken = PasswordResetToken.builder()
+                    .token(token)
+                    .user(user)
+                    .expiresAt(LocalDateTime.now().plusMinutes(15))
+                    .used(false)
+                    .build();
+
+            passwordResetTokenRepository.save(resetToken);
+            emailService.sendPasswordResetEmail(user.getEmail(), token);
+        });
+
+        return new MessageResponseDTO("If this email is registered, you will receive a reset link shortly.");
+    }
+
+    /**
+     * Validates the reset token and updates the user's password.
+     * Throws an exception if the token is invalid, expired, or already used.
+     */
+    public MessageResponseDTO resetPassword(ResetPasswordRequestDTO request) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new InvalidTokenException("Invalid or expired reset token"));
+
+        if (resetToken.isUsed()) {
+            throw new InvalidTokenException("Reset token has already been used");
+        }
+
+        if (resetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Reset token has expired");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        resetToken.setUsed(true);
+        passwordResetTokenRepository.save(resetToken);
+
+        return new MessageResponseDTO("Password successfully reset. You can now sign in.");
     }
 }

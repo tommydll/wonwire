@@ -1,9 +1,6 @@
 package com.wonwire.wonwire.controller;
 
-import com.wonwire.wonwire.dto.AuthResponseDTO;
-import com.wonwire.wonwire.dto.LoginRequestDTO;
-import com.wonwire.wonwire.dto.MessageResponseDTO;
-import com.wonwire.wonwire.dto.RegisterRequestDTO;
+import com.wonwire.wonwire.dto.*;
 import com.wonwire.wonwire.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +33,27 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    /**
+     * Sends a password reset email to the user.
+     * POST /api/auth/forgot-password
+     * No authentication required.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageResponseDTO> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequestDTO request) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    /**
+     * Resets the user's password using the token received by email.
+     * POST /api/auth/reset-password
+     * No authentication required.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponseDTO> resetPassword(
+            @Valid @RequestBody ResetPasswordRequestDTO request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
     }
 }

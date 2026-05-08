@@ -111,4 +111,14 @@ public class GlobalExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .build());
     }
+
+    /**
+     * Handles invalid or expired password reset token errors.
+     * Returns 400 Bad Request.
+     */
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidToken(
+            InvalidTokenException ex) {
+        return buildError(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+    }
 }
