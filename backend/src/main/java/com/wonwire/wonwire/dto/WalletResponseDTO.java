@@ -18,5 +18,6 @@ public class WalletResponseDTO {
     private BigDecimal balance;
     private Currency currency;
     private String email;
-    private String fullName;
+    private String firstName;
+    private String lastName;
 }

@@ -50,11 +50,11 @@ class TransferControllerTest {
     @BeforeEach
     void setUp() throws Exception {
         // Register and login sender
-        registerUser("alice@wonwire.com", "Alice Dupont");
+        registerUser("alice@wonwire.com", "Alice", "Dupont");
         senderToken = loginAndGetToken("alice@wonwire.com");
 
         // Register and login receiver
-        registerUser("bob@wonwire.com", "Bob Martin");
+        registerUser("bob@wonwire.com", "Bob", "Martin");
         receiverToken = loginAndGetToken("bob@wonwire.com");
 
         creditWallet("alice@wonwire.com", new BigDecimal("500000"));
@@ -103,7 +103,7 @@ class TransferControllerTest {
     @Test
     void transfer_ShouldReturn422_WhenBalanceIsInsufficient() throws Exception {
         // New user with 0 balance tries to send money
-        registerUser("broke@wonwire.com", "Broke User");
+        registerUser("broke@wonwire.com", "Broke", "User");
         String brokeToken = loginAndGetToken("broke@wonwire.com");
 
         TransferRequestDTO request = buildTransferRequest("bob@wonwire.com", new BigDecimal("99999999"));
@@ -184,11 +184,12 @@ class TransferControllerTest {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private void registerUser(String email, String fullName) throws Exception {
+    private void registerUser(String email, String firstName, String lastName) throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO();
         request.setEmail(email);
         request.setPassword("password123");
-        request.setFullName(fullName);
+        request.setFirstName(firstName);
+        request.setLastName(lastName);
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -34,7 +34,7 @@ class AuthControllerTest {
 
     @Test
     void register_ShouldReturn201_WhenRequestIsValid() throws Exception {
-        RegisterRequestDTO request = buildRegisterRequest("thomas@wonwire.com");
+        RegisterRequestDTO request = buildRegisterRequest("john@doe.com");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -45,7 +45,7 @@ class AuthControllerTest {
 
     @Test
     void register_ShouldReturn409_WhenEmailAlreadyExists() throws Exception {
-        RegisterRequestDTO request = buildRegisterRequest("duplicate@wonwire.com");
+        RegisterRequestDTO request = buildRegisterRequest("duplicate@doe.com");
 
         // First registration
         mockMvc.perform(post("/api/auth/register")
@@ -73,9 +73,10 @@ class AuthControllerTest {
     @Test
     void register_ShouldReturn400_WhenPasswordIsTooShort() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO();
-        request.setEmail("thomas@wonwire.com");
+        request.setEmail("john@doe.com");
         request.setPassword("123");
-        request.setFullName("Wonwire Test");
+        request.setFirstName("John");
+        request.setLastName("Doe");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +91,7 @@ class AuthControllerTest {
     @Test
     void login_ShouldReturn200WithToken_WhenCredentialsAreValid() throws Exception {
         // Register first
-        RegisterRequestDTO registerRequest = buildRegisterRequest("login@wonwire.com");
+        RegisterRequestDTO registerRequest = buildRegisterRequest("john@doe.com");
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
@@ -98,7 +99,7 @@ class AuthControllerTest {
 
         // Then login
         LoginRequestDTO loginRequest = new LoginRequestDTO();
-        loginRequest.setEmail("login@wonwire.com");
+        loginRequest.setEmail("john@doe.com");
         loginRequest.setPassword("password123");
 
         mockMvc.perform(post("/api/auth/login")
@@ -106,8 +107,9 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.email").value("login@wonwire.com"))
-                .andExpect(jsonPath("$.fullName").value("Wonwire Test"));
+                .andExpect(jsonPath("$.email").value("john@doe.com"))
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Doe"));
     }
 
     @Test
@@ -150,7 +152,8 @@ class AuthControllerTest {
         RegisterRequestDTO request = new RegisterRequestDTO();
         request.setEmail(email);
         request.setPassword("password123");
-        request.setFullName("Wonwire Test");
+        request.setFirstName("John");
+        request.setLastName("Doe");
         return request;
     }
 }

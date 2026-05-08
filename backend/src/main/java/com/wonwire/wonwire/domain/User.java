@@ -29,7 +29,10 @@ public class User implements UserDetails {
     private String password;
 
     @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     /**
      * One-to-one relationship with Wallet.
@@ -61,6 +64,13 @@ public class User implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Returns the full name of the user.
+     */
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     /**

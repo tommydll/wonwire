@@ -59,7 +59,8 @@ class AuthServiceTest {
         registerRequest = new RegisterRequestDTO();
         registerRequest.setEmail("test@wonwire.com");
         registerRequest.setPassword("password123");
-        registerRequest.setFullName("Test Wonwire");
+        registerRequest.setFirstName("John");
+        registerRequest.setLastName("Doe");
 
         loginRequest = new LoginRequestDTO();
         loginRequest.setEmail("test@wonwire.com");
@@ -68,7 +69,8 @@ class AuthServiceTest {
         user = User.builder()
                 .email("test@wonwire.com")
                 .password("encodedPassword")
-                .fullName("Test Wonwire")
+                .firstName("John")
+                .lastName("Doe")
                 .build();
     }
 
@@ -122,7 +124,8 @@ class AuthServiceTest {
         // Then
         assertThat(response.getToken()).isEqualTo("jwt.token.here");
         assertThat(response.getEmail()).isEqualTo(user.getEmail());
-        assertThat(response.getFullName()).isEqualTo(user.getFullName());
+        assertThat(response.getFirstName()).isEqualTo(user.getFirstName());
+        assertThat(response.getLastName()).isEqualTo(user.getLastName());
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
     }
 

@@ -49,7 +49,8 @@ public class ContactService {
     private ContactResponseDTO toDTO(User user) {
         return ContactResponseDTO.builder()
                 .email(user.getEmail())
-                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 }

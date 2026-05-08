@@ -15,5 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContactResponseDTO {
     private String email;
-    private String fullName;
+    private String firstName;
+    private String lastName;
 }

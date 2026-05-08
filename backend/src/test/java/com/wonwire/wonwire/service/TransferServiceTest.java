@@ -1,7 +1,7 @@
 package com.wonwire.wonwire.service;
 
 import com.wonwire.wonwire.domain.Transaction;
-import com.wonwire.wonwire.domain.Transaction.TransactionStatus;
+import com.wonwire.wonwire.domain.enums.TransactionStatus;
 import com.wonwire.wonwire.domain.User;
 import com.wonwire.wonwire.domain.Wallet;
 import com.wonwire.wonwire.domain.enums.Currency;
@@ -63,13 +63,15 @@ class TransferServiceTest {
         sender = User.builder()
                 .email("sender@wonwire.com")
                 .password("encodedPassword")
-                .fullName("Sender User")
+                .firstName("Alice")
+                .lastName("Smith")
                 .build();
 
         receiver = User.builder()
                 .email("receiver@wonwire.com")
                 .password("encodedPassword")
-                .fullName("Receiver User")
+                .firstName("Bob")
+                .lastName("Martin")
                 .build();
 
         senderWallet = Wallet.builder()

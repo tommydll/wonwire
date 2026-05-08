@@ -34,7 +34,8 @@ public class WalletService {
                 .balance(wallet.getBalance())
                 .currency(wallet.getCurrency())
                 .email(user.getEmail())
-                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 
