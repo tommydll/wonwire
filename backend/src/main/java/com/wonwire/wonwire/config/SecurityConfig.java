@@ -1,6 +1,7 @@
 package com.wonwire.wonwire.config;
 
 import com.wonwire.wonwire.security.JwtAuthenticationFilter;
+import com.wonwire.wonwire.security.RateLimitFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final RateLimitFilter rateLimitFilter;
 
     /**
      * Defines the security filter chain for all HTTP requests.
@@ -54,7 +56,9 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter,
+                        JwtAuthenticationFilter.class);
 
         return http.build();
     }
