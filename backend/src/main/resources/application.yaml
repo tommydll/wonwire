@@ -1,6 +1,9 @@
 spring:
   application:
     name: wonwire
+  docker:
+    compose:
+      enabled: false
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -17,8 +20,8 @@ spring:
   mail:
     host: sandbox.smtp.mailtrap.io
     port: 2525
-    username: 13588cb8611201
-    password: 7e687c52332f8f
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -28,8 +31,8 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 server:
   port: 8080
