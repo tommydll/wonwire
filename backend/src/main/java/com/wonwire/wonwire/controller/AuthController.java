@@ -36,6 +36,21 @@ public class AuthController {
     }
 
     /**
+     * Logs out the user by blacklisting their JWT token in Redis.
+     * POST /api/auth/logout
+     * Requires authentication.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<MessageResponseDTO> logout(
+            @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String token = authHeader.substring(7);
+        return ResponseEntity.ok(authService.logout(token));
+    }
+
+    /**
      * Sends a password reset email to the user.
      * POST /api/auth/forgot-password
      * No authentication required.

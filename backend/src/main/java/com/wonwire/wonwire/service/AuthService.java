@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,8 @@ public class AuthService {
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailService emailService;
+
+    private final RedisService redisService;
 
     /**
      * Registers a new user, creates an associated wallet with zero balance.
@@ -140,5 +143,17 @@ public class AuthService {
         passwordResetTokenRepository.save(resetToken);
 
         return new MessageResponseDTO("Password successfully reset. You can now sign in.");
+    }
+
+    /**
+     * Blacklists the JWT token in Redis so it cannot be used after logout.
+     * The token is stored with the same expiration as its remaining validity.
+     */
+    public MessageResponseDTO logout(String token) {
+        long expiration = jwtService.getExpirationTime(token);
+        if (expiration > 0) {
+            redisService.set("blacklist:" + token, "true", expiration, TimeUnit.MILLISECONDS);
+        }
+        return new MessageResponseDTO("Successfully logged out");
     }
 }

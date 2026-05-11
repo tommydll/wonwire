@@ -93,4 +93,16 @@ public class JwtService {
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
+
+    /**
+     * Returns the remaining validity time of a token in milliseconds.
+     * Used at logout to set the Redis TTL so blacklisted tokens are
+     * automatically cleaned up when they would have expired anyway.
+     * Returns 0 if the token is already expired.
+     */
+    public long getExpirationTime(String token) {
+        Date expirationDate = extractExpiration(token);
+        long remaining = expirationDate.getTime() - System.currentTimeMillis();
+        return Math.max(remaining, 0);
+    }
 }
