@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { Eye, EyeOff } from 'lucide-react'
+import {useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {Eye, EyeOff} from 'lucide-react'
 import api from '../api/axiosConfig'
 import Footer from '../components/Footer'
+import {ROUTES} from '../routes.js'
 
 function RegisterPage() {
     const [firstName, setFirstName] = useState('')
@@ -27,8 +28,8 @@ function RegisterPage() {
                 firstName,
                 lastName
             })
-            navigate('/login', {
-                state: { message: 'Account created successfully. Please sign in.' }
+            navigate(ROUTES.LOGIN, {
+                state: {message: 'Account created successfully. Please sign in.'}
             })
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
@@ -108,7 +109,7 @@ function RegisterPage() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     style={styles.eyeButton}
                                 >
-                                    {showPassword ? <Eye size={18} color="#999" /> : <EyeOff size={18} color="#999" />}
+                                    {showPassword ? <Eye size={18} color="#999"/> : <EyeOff size={18} color="#999"/>}
                                 </button>
                             </div>
                         </div>
@@ -123,11 +124,11 @@ function RegisterPage() {
                     </form>
 
                     <p style={styles.link}>
-                        Already have an account? <Link to="/login">Sign in</Link>
+                        Already have an account? <Link to={ROUTES.LOGIN}>Sign in</Link>
                     </p>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </>
     )
 }

@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
+import {useState} from 'react'
+import {Link} from 'react-router-dom'
+import {Loader2} from 'lucide-react'
 import api from '../api/axiosConfig'
 import Footer from '../components/Footer'
+import {ROUTES} from '../routes.js'
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState('')
@@ -17,7 +18,7 @@ function ForgotPasswordPage() {
         setSuccess(null)
 
         try {
-            const response = await api.post('/api/auth/forgot-password', { email })
+            const response = await api.post('/api/auth/forgot-password', {email})
             setSuccess(response.data.message)
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
@@ -69,7 +70,7 @@ function ForgotPasswordPage() {
                                 disabled={loading}
                             >
                                 {loading
-                                    ? <><Loader2 size={18} style={styles.spinIcon} /> Sending...</>
+                                    ? <><Loader2 size={18} style={styles.spinIcon}/> Sending...</>
                                     : 'Send reset link'
                                 }
                             </button>
@@ -77,11 +78,11 @@ function ForgotPasswordPage() {
                     )}
 
                     <p style={styles.link}>
-                        <Link to="/login">← Back to sign in</Link>
+                        <Link to={ROUTES.LOGIN}>← Back to sign in</Link>
                     </p>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </>
     )
 }

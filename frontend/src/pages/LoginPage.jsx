@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/useAuth.js'
-import { useLocation } from 'react-router-dom'
+import {useState} from 'react'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
+import {useAuth} from '../context/useAuth.js'
 
 import Footer from '../components/Footer'
-import { Eye, EyeOff } from 'lucide-react'
+import {Eye, EyeOff} from 'lucide-react'
 
 import api from '../api/axiosConfig'
+
+import {ROUTES} from '../routes.js'
 
 function LoginPage() {
     const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ function LoginPage() {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    const { login } = useAuth()
+    const {login} = useAuth()
     const navigate = useNavigate()
 
     const location = useLocation()
@@ -26,9 +27,9 @@ function LoginPage() {
         setError(null)
 
         try {
-            const response = await api.post('/api/auth/login', { email, password })
+            const response = await api.post('/api/auth/login', {email, password})
             login(response.data)
-            navigate('/dashboard')
+            navigate(ROUTES.DASHBOARD)
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
             setPassword('')
@@ -87,7 +88,7 @@ function LoginPage() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     style={styles.eyeButton}
                                 >
-                                    {showPassword ? <Eye size={18} color="#999" /> : <EyeOff size={18} color="#999" />}
+                                    {showPassword ? <Eye size={18} color="#999"/> : <EyeOff size={18} color="#999"/>}
                                 </button>
                             </div>
                         </div>
@@ -102,14 +103,14 @@ function LoginPage() {
                     </form>
 
                     <p style={styles.link}>
-                        Don't have an account? <Link to="/register">Register</Link>
+                        Don't have an account? <Link to={ROUTES.REGISTER}>Register</Link>
                     </p>
                     <p style={styles.link}>
-                        <Link to="/forgot-password">Forgot your password?</Link>
+                        <Link to={ROUTES.FORGOT_PASSWORD}>Forgot your password?</Link>
                     </p>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </>
     )
 }

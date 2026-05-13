@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { ROUTES } from '../routes.js'
 
 class ErrorBoundary extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class ErrorBoundary extends Component {
 
     handleReset = () => {
         this.setState({ hasError: false, error: null })
-        window.location.href = '/dashboard'
+        window.location.href = ROUTES.DASHBOARD
     }
 
     render() {

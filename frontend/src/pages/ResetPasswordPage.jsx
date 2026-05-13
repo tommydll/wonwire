@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import {useState} from 'react'
+import {Link, useNavigate, useSearchParams} from 'react-router-dom'
+import {Eye, EyeOff, Loader2} from 'lucide-react'
 import api from '../api/axiosConfig'
 import Footer from '../components/Footer'
+import {ROUTES} from '../routes.js'
 
 function ResetPasswordPage() {
     const [searchParams] = useSearchParams()
@@ -25,11 +26,11 @@ function ResetPasswordPage() {
                             Invalid or missing reset token. Please request a new password reset.
                         </div>
                         <p style={styles.link}>
-                            <Link to="/forgot-password">Request a new link</Link>
+                            <Link to={ROUTES.FORGOT_PASSWORD}>Request a new link</Link>
                         </p>
                     </div>
                 </div>
-                <Footer />
+                <Footer/>
             </>
         )
     }
@@ -45,7 +46,7 @@ function ResetPasswordPage() {
                 newPassword,
             })
             setSuccess(response.data.message)
-            setTimeout(() => navigate('/login'), 6000)
+            setTimeout(() => navigate(ROUTES.LOGIN), 6000)
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred')
         } finally {
@@ -90,8 +91,8 @@ function ResetPasswordPage() {
                                         style={styles.eyeButton}
                                     >
                                         {showPassword
-                                            ? <Eye size={18} color="#999" />
-                                            : <EyeOff size={18} color="#999" />
+                                            ? <Eye size={18} color="#999"/>
+                                            : <EyeOff size={18} color="#999"/>
                                         }
                                     </button>
                                 </div>
@@ -108,7 +109,7 @@ function ResetPasswordPage() {
                                 disabled={loading}
                             >
                                 {loading
-                                    ? <><Loader2 size={18} style={styles.spinIcon} /> Resetting...</>
+                                    ? <><Loader2 size={18} style={styles.spinIcon}/> Resetting...</>
                                     : 'Reset Password'
                                 }
                             </button>
@@ -116,11 +117,11 @@ function ResetPasswordPage() {
                     )}
 
                     <p style={styles.link}>
-                        <Link to="/login">← Back to sign in</Link>
+                        <Link to={ROUTES.LOGIN}>← Back to sign in</Link>
                     </p>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </>
     )
 }

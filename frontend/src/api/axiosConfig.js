@@ -24,7 +24,7 @@ api.interceptors.response.use(
         const isUserEndpoint = error.config.url.includes('/api/user/')
         if (error.response?.status === 401 && !isAuthEndpoint && !isUserEndpoint) {
             localStorage.removeItem('token')
-            window.location.href = '/login'
+            window.location.href = ROUTES.LOGIN
         }
         return Promise.reject(error)
     }

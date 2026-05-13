@@ -4,6 +4,7 @@ import {useAuth} from '../context/useAuth'
 import {ArrowDownLeft, ArrowRightLeft, ArrowUpRight, Landmark} from 'lucide-react'
 import api from '../api/axiosConfig'
 import PageLoader from "../components/PageLoader.jsx";
+import { ROUTES } from '../routes.js'
 
 function DashboardPage() {
     const {user} = useAuth()
@@ -78,7 +79,7 @@ function DashboardPage() {
                 <p style={styles.balanceCurrency}>{wallet?.currency}</p>
                 <button
                     style={styles.sendButton}
-                    onClick={() => navigate('/transfer')}
+                    onClick={() => navigate(ROUTES.TRANSFER)}
                 >
                     <ArrowRightLeft size={18}/>
                     Send Money

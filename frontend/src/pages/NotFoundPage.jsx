@@ -1,9 +1,10 @@
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/useAuth'
+import {useNavigate} from 'react-router-dom'
+import {useAuth} from '../context/useAuth'
+import {ROUTES} from '../routes.js'
 
 function NotFoundPage() {
     const navigate = useNavigate()
-    const { user } = useAuth()
+    const {user} = useAuth()
 
     return (
         <div style={styles.container}>
@@ -15,7 +16,7 @@ function NotFoundPage() {
                 </p>
                 <button
                     style={styles.button}
-                    onClick={() => navigate(user ? '/dashboard' : '/login')}
+                    onClick={() => navigate(user ? ROUTES.DASHBOARD : ROUTES.LOGIN)}
                 >
                     {user ? 'Back to Dashboard' : 'Back to Login'}
                 </button>

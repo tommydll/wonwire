@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { LayoutDashboard, ArrowRightLeft, History, Landmark, LogOut } from 'lucide-react'
 import { useState } from 'react'
+import { ROUTES } from '../routes.js'
 
 function Sidebar() {
     const { user, logout } = useAuth()
@@ -11,7 +12,7 @@ function Sidebar() {
 
     const handleLogout = () => {
         logout()
-        navigate('/login')
+        navigate(ROUTES.LOGIN)
     }
 
     const initials = (user?.firstName && user?.lastName)
@@ -25,7 +26,7 @@ function Sidebar() {
             </div>
 
             <nav style={styles.nav}>
-                <NavLink to="/dashboard" style={({ isActive }) => ({
+                <NavLink to={ROUTES.DASHBOARD} style={({ isActive }) => ({
                     ...styles.navItem,
                     ...(isActive ? styles.navItemActive : {})
                 })}>
@@ -33,7 +34,7 @@ function Sidebar() {
                     <span>Dashboard</span>
                 </NavLink>
 
-                <NavLink to="/transfer" style={({ isActive }) => ({
+                <NavLink to={ROUTES.TRANSFER} style={({ isActive }) => ({
                     ...styles.navItem,
                     ...(isActive ? styles.navItemActive : {})
                 })}>
@@ -41,7 +42,7 @@ function Sidebar() {
                     <span>Transfer</span>
                 </NavLink>
 
-                <NavLink to="/deposit" style={({ isActive }) => ({
+                <NavLink to={ROUTES.DEPOSIT} style={({ isActive }) => ({
                     ...styles.navItem,
                     ...(isActive ? styles.navItemActive : {})
                 })}>
@@ -49,7 +50,7 @@ function Sidebar() {
                     <span>Deposit</span>
                 </NavLink>
 
-                <NavLink to="/history" style={({ isActive }) => ({
+                <NavLink to={ROUTES.HISTORY} style={({ isActive }) => ({
                     ...styles.navItem,
                     ...(isActive ? styles.navItemActive : {})
                 })}>
@@ -64,7 +65,7 @@ function Sidebar() {
                         ...styles.userProfile,
                         backgroundColor: profileHovered ? 'rgba(255,255,255,0.08)' : 'transparent',
                     }}
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate(ROUTES.PROFILE)}
                     onMouseEnter={() => setProfileHovered(true)}
                     onMouseLeave={() => setProfileHovered(false)}
                 >

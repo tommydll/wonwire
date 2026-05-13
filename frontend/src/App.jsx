@@ -12,38 +12,39 @@ import {useAuth} from "./context/useAuth.js";
 import Layout from "./components/Layout.jsx";
 import DepositPage from "./pages/DepositPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import { ROUTES } from './routes.js'
 
 function App() {
     const { user } = useAuth()
 
     return (
         <Routes>
-            <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} />} />
-            <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-            <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
-            <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />} />
-            <Route path="/reset-password" element={user ? <Navigate to="/dashboard" replace /> : <ResetPasswordPage />} />
-            <Route path="/dashboard" element={
+            <Route path={ROUTES.HOME} element={<Navigate to={user ? ROUTES.DASHBOARD : ROUTES.LOGIN} />} />
+            <Route path={ROUTES.LOGIN} element={user ? <Navigate to={ROUTES.DASHBOARD} replace /> : <LoginPage />} />
+            <Route path={ROUTES.REGISTER} element={user ? <Navigate to={ROUTES.DASHBOARD} replace /> : <RegisterPage />} />
+            <Route path={ROUTES.FORGOT_PASSWORD} element={user ? <Navigate to={ROUTES.DASHBOARD} replace /> : <ForgotPasswordPage />} />
+            <Route path={ROUTES.RESET_PASSWORD} element={user ? <Navigate to={ROUTES.DASHBOARD} replace /> : <ResetPasswordPage />} />
+            <Route path={ROUTES.DASHBOARD} element={
                 <ProtectedRoute>
                     <Layout><DashboardPage /></Layout>
                 </ProtectedRoute>
             } />
-            <Route path="/transfer" element={
+            <Route path={ROUTES.TRANSFER} element={
                 <ProtectedRoute>
                     <Layout><TransferPage /></Layout>
                 </ProtectedRoute>
             } />
-            <Route path="/deposit" element={
+            <Route path={ROUTES.DEPOSIT} element={
                 <ProtectedRoute>
                     <Layout><DepositPage /></Layout>
                 </ProtectedRoute>
             } />
-            <Route path="/history" element={
+            <Route path={ROUTES.HISTORY} element={
                 <ProtectedRoute>
                     <Layout><HistoryPage /></Layout>
                 </ProtectedRoute>
             } />
-            <Route path="/profile" element={
+            <Route path={ROUTES.PROFILE} element={
                 <ProtectedRoute>
                     <Layout><ProfilePage /></Layout>
                 </ProtectedRoute>
