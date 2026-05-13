@@ -72,7 +72,7 @@ class RedisControllerTest {
     }
 
     // =========================================================================
-    // RATE LIMITING -- /api/auth/register (limit: 3 requests / 60 s)
+    // RATE LIMITING -- /api/auth/register (limit: 3 requests / 30 s)
     // =========================================================================
 
     @Test
