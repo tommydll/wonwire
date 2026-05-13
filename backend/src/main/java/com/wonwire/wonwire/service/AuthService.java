@@ -147,12 +147,15 @@ public class AuthService {
 
     /**
      * Blacklists the JWT token in Redis so it cannot be used after logout.
-     * The token is stored with the same expiration as its remaining validity.
+     * The blacklist key uses the token's jti claim instead of the full token string,
+     * which guarantees uniqueness even for tokens issued within the same millisecond.
+     * The TTL matches the token's remaining validity so the key self-cleans when the token would have expired anyway.
      */
     public MessageResponseDTO logout(String token) {
         long expiration = jwtService.getExpirationTime(token);
         if (expiration > 0) {
-            redisService.set("blacklist:" + token, "true", expiration, TimeUnit.MILLISECONDS);
+            String jti = jwtService.extractJti(token);
+            redisService.set("blacklist:" + jti, "true", expiration, TimeUnit.MILLISECONDS);
         }
         return new MessageResponseDTO("Successfully logged out");
     }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,6 +19,19 @@ import java.util.stream.Collectors;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * Handles missing request header errors.
+     * Returns 401 Unauthorized
+     */
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingRequestHeader(
+            MissingRequestHeaderException ex) {
+        if ("Authorization".equals(ex.getHeaderName())) {
+            return buildError(HttpStatus.UNAUTHORIZED, "Unauthorized", "Missing Authorization header");
+        }
+        return buildError(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+    }
 
     /**
      * Handles user already exists errors.

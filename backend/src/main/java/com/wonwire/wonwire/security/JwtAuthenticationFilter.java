@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            boolean isBlacklisted = redisService.exists("blacklist:" + jwt);
+            boolean isBlacklisted = redisService.exists("blacklist:" + jwtService.extractJti(jwt));
             if (!isBlacklisted && jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

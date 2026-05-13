@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -31,6 +32,14 @@ public class JwtService {
     }
 
     /**
+     * Extracts the jti (JWT ID) claim from a token.
+     * Used to build the Redis blacklist key at logout and at each authenticated request.
+     */
+    public String extractJti(String token) {
+        return extractClaim(token, claims -> claims.get("jti", String.class));
+    }
+
+    /**
      * Generates a JWT token for the given user.
      */
     public String generateToken(UserDetails userDetails) {
@@ -39,10 +48,15 @@ public class JwtService {
 
     /**
      * Generates a JWT token with extra claims for the given user.
+     * A unique jti (JWT ID) claim is injected into every token so that two tokens
+     * issued for the same user at the same millisecond are never identical.
+     * This is required for per-token blacklisting at logout (see AuthService.logout).
      */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        claims.put("jti", UUID.randomUUID().toString());
         return Jwts.builder()
-                .claims(extraClaims)
+                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
