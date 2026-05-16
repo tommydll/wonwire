@@ -1,0 +1,23 @@
+package com.wonwire.wonwire.dto;
+
+import com.wonwire.wonwire.domain.enums.Currency;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+
+/**
+ * Response DTO returned when a user requests their wallet balance.
+ */
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class WalletResponseDTO {
+    private BigDecimal balance;
+    private Currency currency;
+    private String email;
+    private String firstName;
+    private String lastName;
+}
